@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Button, StatusBar } from "react-native";
+import { View, Text, StyleSheet, Button, StatusBar, Vibration } from "react-native";
 
 interface Props {
   name: string;
@@ -24,7 +24,7 @@ function App({ name, baseEnthusiasmLevel = 0 }: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.greeting}>
-        Hellos {name}
+        Hello World {name}
         {getExclamationMarks(enthusiasmLevel)}
       </Text>
       <View>
@@ -39,6 +39,11 @@ function App({ name, baseEnthusiasmLevel = 0 }: Props) {
           accessibilityLabel="decrement"
           onPress={onDecrement}
           color="red"
+        />
+        {/* Vibration Btn */}
+        <Button
+          title="Vibrate for 10 seconds"
+          onPress={() => Vibration.vibrate(10 * 100)}
         />
       </View>
       <StatusBar barStyle={"light-content"} />
