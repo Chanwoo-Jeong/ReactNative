@@ -6,7 +6,7 @@ interface Props {
   baseEnthusiasmLevel?: number;
 }
 
-const App: React.FC<Props> = ({ name, baseEnthusiasmLevel = 0 }) => {
+function App({ name, baseEnthusiasmLevel = 0 }: Props) {
   const [enthusiasmLevel, setEnthusiasmLevel] = useState(baseEnthusiasmLevel);
 
   const onIncrement = () => {
@@ -44,7 +44,7 @@ const App: React.FC<Props> = ({ name, baseEnthusiasmLevel = 0 }) => {
       <StatusBar barStyle={"light-content"} />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
