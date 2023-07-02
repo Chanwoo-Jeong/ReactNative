@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
   container: {
     position:"absolute",
     flex: 1,
+    paddingBottom:30,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "purple",
