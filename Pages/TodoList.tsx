@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { theme } from "../styles/color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { StatusBar } from "expo-status-bar";
 
 const STORAGE_KEY = "@toDos";
 
@@ -60,6 +61,7 @@ function TodoList() {
 
   return (
     <View style={styles.container}>
+      <StatusBar style="light" />
       <View style={styles.header}>
         <TouchableOpacity onPress={work}>
           <Text
