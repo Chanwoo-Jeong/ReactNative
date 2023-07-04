@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -9,20 +9,37 @@ import {
   View,
 } from "react-native";
 import { theme } from "../styles/color";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const STORAGE_KEY = "@toDos";
+
+interface ToDosInterface {
+  [key: string]: { text: string; working: boolean };
+}
 
 function TodoList() {
   const [working, setWorking] = useState<boolean>(true);
   const [text, setText] = useState("");
-  const [toDos, setToDos] = useState<{
-    [key: string]: { text: string; work: boolean };
-  }>({});
+  const [toDos, setToDos] = useState<ToDosInterface>({});
+
+  useEffect(() => {
+    loadToDos();
+  }, []);
 
   const travel = () => setWorking(false);
   const work = () => setWorking(true);
 
-  const onChangeText = (payload: any) => setText(payload);
+  const onChangeText = (payload: string) => setText(payload);
 
-  const addToDo = () => {
+  const saveToDos = async (toSave: ToDosInterface) => {
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+  };
+  const loadToDos = async () => {
+    const s = await AsyncStorage.getItem(STORAGE_KEY);
+    setToDos(JSON.parse(s as string));
+  };
+
+  const addToDo = async () => {
     if (text === "") {
       return;
     }
@@ -33,16 +50,13 @@ function TodoList() {
     // });
 
     /** ES6문법 스프레드 연산자로 합치기 */
-    const newToDos = { ...toDos, [Date.now()]: { text, work: working } };
+    const newToDos = { ...toDos, [Date.now()]: { text, working } };
     setToDos(newToDos);
-
+    await saveToDos(newToDos);
     /** Alert 함수 */
     // Alert.alert("Alert Title", text);
     setText("");
   };
-
-  console.log(toDos);
-  console.log(Object.keys(toDos));
 
   return (
     <View style={styles.container}>
@@ -71,18 +85,20 @@ function TodoList() {
           onChangeText={onChangeText}
           returnKeyType="done"
           value={text}
-          placeholder={working ? "Add a To Do" : "Where do you want to go?"}
+          placeholder={
+            working ? "What do you have to do?" : "Where do you want to go?"
+          }
           style={styles.input}
         />
       </View>
 
       <ScrollView>
         {Object.keys(toDos).map((key) => {
-          return (
-            <View>
-              <Text style={styles.todoText}>{toDos[key].text}</Text>
+          return toDos[key].working === working ? (
+            <View style={styles.toDo} key={key}>
+              <Text style={styles.toDoText}>{toDos[key].text}</Text>
             </View>
-          );
+          ) : null;
         })}
       </ScrollView>
     </View>
@@ -111,10 +127,19 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 30,
-    marginTop: 20,
+    marginVertical: 20,
   },
-  todoText: {
+  toDo: {
+    backgroundColor: theme.toDoBg,
+    marginBottom: 10,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 15,
+  },
+  toDoText: {
     color: "white",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
 
