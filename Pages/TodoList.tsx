@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import {
+  Alert,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -11,11 +13,36 @@ import { theme } from "../styles/color";
 function TodoList() {
   const [working, setWorking] = useState<boolean>(true);
   const [text, setText] = useState("");
+  const [toDos, setToDos] = useState<{
+    [key: string]: { text: string; work: boolean };
+  }>({});
 
   const travel = () => setWorking(false);
   const work = () => setWorking(true);
 
-  const onChangeText = (payload : any) => setText(payload);
+  const onChangeText = (payload: any) => setText(payload);
+
+  const addToDo = () => {
+    if (text === "") {
+      return;
+    }
+
+    /** Object 합치는 문법 */
+    // const newToDos = Object.assign({}, toDos, {
+    //   [Date.now()]: { text, work: working },
+    // });
+
+    /** ES6문법 스프레드 연산자로 합치기 */
+    const newToDos = { ...toDos, [Date.now()]: { text, work: working } };
+    setToDos(newToDos);
+
+    /** Alert 함수 */
+    // Alert.alert("Alert Title", text);
+    setText("");
+  };
+
+  console.log(toDos);
+  console.log(Object.keys(toDos));
 
   return (
     <View style={styles.container}>
@@ -39,13 +66,25 @@ function TodoList() {
         </TouchableOpacity>
       </View>
       <View>
-      <TextInput
-        onChangeText={onChangeText}
-        value={text}
-        placeholder={working ? "Add a To Do" : "Where do you want to go?"}
-        style={styles.input}
-      />
+        <TextInput
+          onSubmitEditing={addToDo}
+          onChangeText={onChangeText}
+          returnKeyType="done"
+          value={text}
+          placeholder={working ? "Add a To Do" : "Where do you want to go?"}
+          style={styles.input}
+        />
       </View>
+
+      <ScrollView>
+        {Object.keys(toDos).map((key) => {
+          return (
+            <View>
+              <Text style={styles.todoText}>{toDos[key].text}</Text>
+            </View>
+          );
+        })}
+      </ScrollView>
     </View>
   );
 }
@@ -73,6 +112,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 30,
     marginTop: 20,
+  },
+  todoText: {
+    color: "white",
   },
 });
 
